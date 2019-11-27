@@ -1,0 +1,5 @@
+.postTitle
+  = @tweets.name
+  さんの投稿一覧
+- @tweets.each do |post|
+  = render partial: "tweets/post", locals: { post: post }

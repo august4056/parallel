@@ -1,0 +1,14 @@
+= form_with model: tweet, class: :form, local: true do |form|
+  New Posting Form
+  = form.text_field :title, placeholder: "What is kind of contents?", class: "form__title"
+  .form__content
+    = form.text_area :text, class: 'form__content__text', placeholder: "Type or describe your contents"
+    = form.label :image, class: 'form__content__image' do
+      -# = icon('fa fas-image', class: 'form__content__image__fa-image')
+      = form.file_field :image, class: 'form__content__image__file-image'
+  = form.submit '投稿する', class: 'form__btn'
+
+
+
+
+  

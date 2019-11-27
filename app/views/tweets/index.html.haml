@@ -1,0 +1,9 @@
+.contents
+  - @tweets.each do |post|
+    = render partial: "tweets/post", locals: { post: post }
+
+= render partial: 'form', locals: {tweet: @tweet}
+
+
+
+
