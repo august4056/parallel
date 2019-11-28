@@ -120,7 +120,9 @@ legend {
 // My own reset scss I wrote below contents.
 
 body {
-  background-color: rgb(136, 183, 255);
+  background-image: url(https://www.owd.jp/wp-content/uploads/2019/07/GOPR3212-1024x683.jpg);
+	background-size: cover;
+	background-color: rgba($color: #FFF, $alpha: 0.8);
 }
 
 a{

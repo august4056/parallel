@@ -1,8 +1,11 @@
 .header{
+  background-color: rgba($color: #fff, $alpha: 0.8);
+  position: relative;
+  background-image: url(https://www.owd.jp/wp-content/uploads/2018/11/ai-DSC_80102000.jpg);
+  background-size: cover;
   height: 100px;
   width: 100%;
   padding: 0;
-  background-color: #3c91ff;
   display: flex;
   justify-content: space-between;
   border-bottom: solid 5px #033661;
@@ -27,16 +30,18 @@
       color: #223;
       margin-right: 15px;
       background-color: #8bb4ff;
-      box-shadow: 5px 5px #223;
+      box-shadow: 5px 5px #b3b3b3;
       border-radius: 10px;
     }
   }
 }
 
 .contents{
+  border-radius: 10px;
+  box-shadow: 5px 5px rgb(0, 0, 0);
+  background-color: rgba($color: #c8ddfc, $alpha: 0.9);
   width: 95%;
   margin: 20px auto;
-  background-color: #a8c9fa;
   height: 600px;
   overflow: scroll;
   .content{
@@ -44,16 +49,22 @@
     margin-bottom: 20px;
     border-bottom: 5px solid #000a33;
     display: flex;
-    &__left{
-      padding-right: 20px;
+    flex-direction: column;
+    &__top{
+      padding: 20px;
+      margin: 0 auto;
+      width: 95%;
+      background-color: rgba($color: #fff, $alpha: 0.8);
       &--image{
+        margin: 0 auto;
         height: 150px;
-        width: 150px;
+        width: 60%;
+        background-color: #c2c2c2;
         border: solid 2px #033661;
         box-shadow: 5px 5px #223;
       }
     }
-    &__right{
+    &__bottom{
       width: 100%;
       height: 100%;
       display: flex;
@@ -67,19 +78,14 @@
         &--title{
           text-decoration: none;
           color: #010736;
-
         }
         &--text{
           margin: 20px;
           font-size: 20px;
-
         }
       }
-      &__bottom{
+      &__right{
         height: 100%;
-        position: relative;
-        top: 70px;
-        bottom: 0;
         font-weight: bold;
         color: rgb(34, 33, 114);
         display: flex;
@@ -157,7 +163,9 @@
 .form{
   margin: 20px auto;
   padding: 30px 0;
-  width: 85%;
+  background-color: rgba($color: #a8c9fa, $alpha: 0.8) ;
+  box-shadow: 5px 5px #223;
+  width: 90%;
   height: 100%;
   font-size: 20px;
   text-align: center;
@@ -166,15 +174,14 @@
     color: #8fbffd;
     padding: 10px;
     display: block;
-    width: 100%;
+    width: 90%;
   }
   &__content{
     display: flex;
     flex-direction: column;
     &__text{
-
-      width: 100%;
-      height: 50%;
+      width: 90%;
+      height: 100px;
       margin: 15px auto;
     }
     &__file{

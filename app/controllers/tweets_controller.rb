@@ -10,8 +10,14 @@ class TweetsController < ApplicationController
   end
 
   def create
-    Tweet.create(post_params)
-    redirect_to root_path
+    @tweet = Tweet.create(post_params)
+    if @tweet.save
+    redirect_to root_path, notice: "messageをそうしんしたよ" 
+    else
+      @tweets = @tweet.includes(:user)
+      flash.now[:alert] = 'メッセージを入力してね'
+      render :index
+    end
   end
 
   def show
@@ -20,6 +26,7 @@ class TweetsController < ApplicationController
   end
 
   private
+
   def post_params
     params.require(:tweet).permit(:title, :text, :image, :file).merge(user_id: current_user.id)
   end
