@@ -8,10 +8,9 @@
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
 
-.header
+.header, src: ""
   .header__title
     = link_to "Parallel EdTech", root_path, class: "header__title__text"
-      
   .header__right
     - if user_signed_in?
       = link_to "New Post", new_tweet_path, class: "header__right__btn"
