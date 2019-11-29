@@ -3,7 +3,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   # include CarrierWave::RMagick
   include CarrierWave::MiniMagick
 
-  process resize_to_fill: [80, 148, "center"]
+  process resize_to_fill: [800, 800, "center"]
   # process resize_to_limit: [800, 80, "#cccccc", "center"]
 
   # Choose what kind of storage to use for this uploader:

@@ -2,7 +2,8 @@
   .content__top
     .content__top--image
       - if post.image.present?
-        = image_tag post.image.url
+        =link_to tweet_path(post.id), target: "_blank" do
+          = image_tag post.image.url
   .content__bottom
     .content__bottom__top
       = link_to post.title, tweet_path(post.id), class: "content__right__top--title"
