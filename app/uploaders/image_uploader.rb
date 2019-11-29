@@ -1,6 +1,6 @@
 class ImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
-  # include CarrierWave::RMagick
+  include CarrierWave::RMagick
   include CarrierWave::MiniMagick
 
   process resize_to_fill: [800, 800, "center"]
@@ -49,14 +49,14 @@ class ImageUploader < CarrierWave::Uploader::Base
   # end
 
 
-  # version :thumb do
-  #   process resize_to_fill: [50, 50]
+  version :thumb do
+    process resize_to_fill: [150, 500]
   
-  #   # thumb.jpg という固定ファイル名で作成 ( full_filename メソッドをオーバーライド )
-  #   def full_filename for_file
-  #     "thumb.jpg"
-  #   end
-  # end
+    # thumb.jpg という固定ファイル名で作成 ( full_filename メソッドをオーバーライド )
+    # def full_filename for_file
+    #   "thumb.jpg"
+    # end
+  end
   
   # version :gallery do
   #   process resize_to_limit: [300, 200]

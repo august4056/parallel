@@ -3,15 +3,15 @@
     .content__top--image
       - if post.image.present?
         =link_to tweet_path(post.id), target: "_blank" do
-          = image_tag post.image.url
+          = image_tag post.image.thumb.url
   .content__bottom
     .content__bottom__top
       = link_to post.title, tweet_path(post.id), class: "content__right__top--title"
       - if post.text.present?
         .content__bottom__top--text
-          = link_to post.text
+          = post.text
     .content__bottom__right
       .content__bottom__right--userName
         = link_to post.user.name, user_path(post.user), class: "content__right__bottom--userName--btn"
       .content__bottom__right--date
-        = post.created_at
+        = post.created_at.strftime("%Y/%m/%d %H:%M")

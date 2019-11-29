@@ -18,6 +18,7 @@ class TweetsController < ApplicationController
 
   def show
     post = Tweet.find(params[:id])
+    @user = User.find(params[:id])
     @tweets = Tweet.includes(:user)
   end
 
