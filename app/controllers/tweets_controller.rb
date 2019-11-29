@@ -1,5 +1,7 @@
 class TweetsController < ApplicationController
 
+  before_action :authenticate_user!, only: :show
+
   def index
     @tweet = Tweet.new
     @tweets = Tweet.includes(:user)
@@ -11,13 +13,7 @@ class TweetsController < ApplicationController
 
   def create
     @tweet = Tweet.create(post_params)
-    if @tweet.save
     redirect_to root_path, notice: "messageをそうしんしたよ" 
-    else
-      @tweets = @tweet.includes(:user)
-      flash.now[:alert] = 'メッセージを入力してね'
-      render :index
-    end
   end
 
   def show
