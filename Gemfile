@@ -34,6 +34,8 @@ gem 'devise'
 
 gem 'carrierwave'
 
+gem 'kaminari'
+
 # gem "twitter-bootstrap-rails"
 
 # gem "less-rails"
@@ -41,7 +43,9 @@ gem 'carrierwave'
 # gem 'therubyracer'
 
 # Use ActiveStorage variant
-# gem 'mini_magick', '~> 4.8'
+gem 'mini_magick', '~> 4.8'
+
+gem 'rmagick'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -80,6 +84,4 @@ gem 'compass-rails', '3.1.0'
 
 gem 'sprockets', '3.7.2'
 
-gem 'mini_magick'
-
-gem 'rmagick'
+gem 'bootstrap'

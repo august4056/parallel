@@ -2,12 +2,17 @@
 %html
   %head
     %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
-    %meta{name: "viewport", content: "width=device-width, initial-scale=1"}/
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1"}
     %title Parallel
+    %script{:src => "https://code.jquery.com/jquery-2.2.4.min.js"}
     = csrf_meta_tags
     = csp_meta_tag
+    %link{:href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", :rel => "stylesheet"}/
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    %script{:src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"}
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+    %link{:crossorigin => "anonymous", :href => "https://use.fontawesome.com/releases/v5.8.2/css/all.css", :integrity => "sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay", :rel => "stylesheet"}/
+
 
 .header
   .header__title
@@ -20,8 +25,6 @@
     - else
       = link_to "ログイン", new_user_session_path, class: 'header__right__btn'
       = link_to "新規登録", new_user_registration_path, class: 'header__right__btn'
-
-      
 
 %body
   = yield

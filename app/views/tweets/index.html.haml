@@ -1,9 +1,5 @@
 .contents
   - @tweets.each do |post|
     = render partial: "tweets/post", locals: { post: post }
-
+  = paginate(@tweets)
 = render partial: 'form', locals: {tweet: @tweet}
-
-
-
-

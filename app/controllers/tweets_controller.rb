@@ -4,7 +4,7 @@ class TweetsController < ApplicationController
 
   def index
     @tweet = Tweet.new
-    @tweets = Tweet.includes(:user)
+    @tweets = Tweet.includes(:user).order("created_at DESC").page(params[:page]).per(5)
   end
   
   def new
@@ -13,13 +13,13 @@ class TweetsController < ApplicationController
 
   def create
     @tweet = Tweet.create(post_params)
-    redirect_to root_path, notice: "messageをそうしんしたよ" 
+    redirect_to root_path, notice: "投稿したよ" 
   end
 
   def show
     post = Tweet.find(params[:id])
-    @user = User.find(params[:id])
-    @tweets = Tweet.includes(:user)
+    @user = post
+    @tweets = Tweet.includes(:user).order("created_at DESC").page(params[:page]).per(5)
   end
 
   private

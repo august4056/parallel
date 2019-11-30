@@ -50,7 +50,7 @@ class ImageUploader < CarrierWave::Uploader::Base
 
 
   version :thumb do
-    process resize_to_fill: [150, 500]
+    process resize_to_fill: [800, 148]
   
     # thumb.jpg という固定ファイル名で作成 ( full_filename メソッドをオーバーライド )
     # def full_filename for_file

@@ -190,27 +190,28 @@
       background-color: #626dff;
       box-shadow: 5px 5px #223;
       display: block;
+      margin: 10px;
       &__fa-image{
         background-color: #626dff;
         font-size: 10px;
-        
       }
       &__file-image{
+        margin: 10px;
         background-color: #626dff;
         font-size: 10px;
+        &__preview{
+          margin: 10px;
+        }
       }
     }
   }
-  
   &__btn{
     display: block;
     box-shadow: 5px 5px #223;
-    width: 10%;
+    width: 70px;
     margin: 15px auto 0;
   }
 }
-
-
 
 .user{
   padding: 15px 30px;
