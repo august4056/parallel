@@ -1,0 +1,23 @@
+{
+  "name": "@launchpad/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "build": "tsc -b",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@launchpad/shared": "file:../../packages/shared",
+    "hono": "^4.0.5",
+    "jose": "^5.2.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240222.0",
+    "typescript": "^5.4.2",
+    "wrangler": "^3.28.2"
+  }
+}

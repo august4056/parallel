@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@launchpad/shared": ["../../packages/shared/src"],
+      "@launchpad/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "../../packages/shared" }]
+}
