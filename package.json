@@ -1,5 +1,14 @@
 {
-  "name": "parallel",
+  "name": "launchpad-lab",
   "private": true,
-  "dependencies": {}
+  "workspaces": [
+    "apps/frontend",
+    "apps/worker",
+    "packages/shared"
+  ],
+  "scripts": {
+    "build": "npm run -w @launchpad/shared build && npm run -w @launchpad/frontend build && npm run -w @launchpad/worker build",
+    "dev": "npm run -w @launchpad/frontend dev",
+    "typecheck": "npm run -w @launchpad/shared build && npm run -w @launchpad/frontend typecheck && npm run -w @launchpad/worker typecheck"
+  }
 }

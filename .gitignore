@@ -18,7 +18,13 @@
 !/storage/.keep
 
 /node_modules
+/apps/frontend/node_modules
+/apps/worker/node_modules
+packages/shared/dist
+apps/frontend/dist
+apps/worker/dist
 /yarn-error.log
+apps/grader/target
 
 /public/assets
 .byebug_history

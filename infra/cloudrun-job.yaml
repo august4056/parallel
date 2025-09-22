@@ -1,0 +1,25 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: launchpad-lab-grader
+  annotations:
+    run.googleapis.com/launch-stage: ALPHA
+spec:
+  template:
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          containers:
+            - image: gcr.io/YOUR_PROJECT/launchpad-lab-grader:latest
+              env:
+                - name: SUPABASE_URL
+                  value: https://YOUR-PROJECT.supabase.co
+                - name: SUPABASE_SERVICE_ROLE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: supabase-service-role
+                      key: key
+                - name: SUPABASE_STORAGE_BUCKET
+                  value: launchpad-lab-grades
+          restartPolicy: Never
