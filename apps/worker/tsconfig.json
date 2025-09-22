@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["ES2022", "WebWorker"],
+    "moduleResolution": "Bundler",
+    "types": ["@cloudflare/workers-types"],
+    "allowJs": false,
+    "composite": true
+  },
+  "include": ["src/**/*.ts"],
+  "references": [{ "path": "../../packages/shared" }]
+}

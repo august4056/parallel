@@ -1,0 +1,10 @@
+name = "launchpad-lab-worker"
+main = "../apps/worker/src/index.ts"
+compatibility_date = "2024-03-05"
+
+[vars]
+SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY = ""
+SUPABASE_JWT_SECRET = ""
+GRADER_DISPATCH_URL = ""
+GRADER_AUTH_TOKEN = ""
