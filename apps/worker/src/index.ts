@@ -1,113 +1,160 @@
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { z } from 'zod';
+import { verifySupabaseJwt, AuthenticationError } from './auth';
+import { AuthorizationError, BadRequestError } from './errors';
+import { logError, logInfo } from './logger';
 import {
   createAssignment,
   createSubmission,
   findGradeBySubmission,
   listAssignments,
   listSubmissions
-} from './lib/supabase';
+} from './supabase';
 import {
-  createAssignmentInputSchema,
-  createSubmissionInputSchema
-} from '@launchpad/shared';
-import { dispatchGraderJob } from './lib/grader';
-import { verifySupabaseJwt, UnauthorizedError } from './lib/auth';
-import type { WorkerBindings, WorkerVariables } from './types';
+  assignmentBodySchema,
+  assignmentQuerySchema,
+  gradeParamSchema,
+  submissionBodySchema
+} from './schema';
+import type { ContextVariables, WorkerBindings } from './types';
 
-const assignmentQuerySchema = z.object({
-  assignmentId: z.string().uuid()
+const app = new Hono<{ Bindings: WorkerBindings; Variables: ContextVariables }>();
+
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use('*', async (c, next) => {
+  const start = Date.now();
+  try {
+    await next();
+  } finally {
+    const durationMs = Date.now() - start;
+    logInfo('request.completed', {
+      method: c.req.method,
+      path: c.req.path,
+      status: c.res.status,
+      durationMs
+    });
+  }
 });
 
-const paramSchema = z.object({
-  submissionId: z.string().uuid()
-});
+const extractBearer = (header: string | undefined) => {
+  if (!header) return null;
+  const [type, token] = header.split(' ');
+  if (!token || type.toLowerCase() !== 'bearer') {
+    return null;
+  }
+  return token;
+};
 
-const app = new Hono<{ Bindings: WorkerBindings; Variables: WorkerVariables }>();
+const requireAuth: Parameters<typeof app.use>[1] = async (c, next) => {
+  const token = extractBearer(c.req.header('authorization'));
+  if (!token) {
+    throw new AuthenticationError();
+  }
+
+  const user = await verifySupabaseJwt(token, c.env);
+  c.set('user', user);
+  await next();
+};
+
+const optionalAuth: Parameters<typeof app.use>[1] = async (c, next) => {
+  const token = extractBearer(c.req.header('authorization'));
+  if (!token) {
+    await next();
+    return;
+  }
+
+  const user = await verifySupabaseJwt(token, c.env);
+  c.set('user', user);
+  await next();
+};
 
 app.get('/health', (c) => c.json({ status: 'ok' }));
 
-app.use('*', async (c, next) => {
-  const authorization = c.req.header('authorization');
-  if (!authorization?.startsWith('Bearer ')) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
-  const token = authorization.slice('Bearer '.length);
-
-  try {
-    const user = await verifySupabaseJwt(token, c.env.SUPABASE_JWT_SECRET);
-    c.set('user', user);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unauthorized';
-    return c.json({ error: message }, 401);
-  }
-
-  await next();
-});
-
-app.post('/submissions', async (c) => {
+app.post('/submissions', requireAuth, async (c) => {
   const user = c.get('user');
-  const payload = createSubmissionInputSchema.parse(await c.req.json());
+  if (!user) {
+    throw new AuthenticationError();
+  }
+  if (user.role !== 'STUDENT') {
+    throw new AuthorizationError('Only students can submit assignments');
+  }
+
+  const payload = submissionBodySchema.parse(await c.req.json());
   const submission = await createSubmission(c.env, user, payload);
-
-  c.executionCtx.waitUntil(
-    dispatchGraderJob(c.env, submission).catch((error) => {
-      console.error('Failed to trigger grader job', error);
-    })
-  );
-
+  logInfo('submission.created', { submissionId: submission.id, userId: user.id });
   return c.json(submission, 201);
 });
 
-app.get('/submissions', async (c) => {
+app.get('/submissions', requireAuth, async (c) => {
   const user = c.get('user');
+  if (!user) {
+    throw new AuthenticationError();
+  }
   const parsed = assignmentQuerySchema.safeParse(c.req.query());
   if (!parsed.success) {
-    return c.json({ error: 'assignmentId is required and must be a UUID.' }, 400);
+    throw new BadRequestError('assignmentId is required and must be a UUID');
   }
 
   const submissions = await listSubmissions(c.env, parsed.data.assignmentId, user);
   return c.json(submissions);
 });
 
-app.get('/grades/:submissionId', async (c) => {
+app.get('/grades/:submissionId', requireAuth, async (c) => {
   const user = c.get('user');
-  const params = paramSchema.parse(c.req.param());
+  if (!user) {
+    throw new AuthenticationError();
+  }
+  const params = gradeParamSchema.parse(c.req.param());
   const grade = await findGradeBySubmission(c.env, params.submissionId, user);
   if (!grade) {
     return c.json({ error: 'Grade not found' }, 404);
   }
-
   return c.json(grade);
 });
 
-app.post('/assignments', async (c) => {
-  const user = c.get('user');
-  if (user.role !== 'INSTRUCTOR') {
-    return c.json({ error: 'Forbidden' }, 403);
-  }
-
-  const payload = createAssignmentInputSchema.parse(await c.req.json());
-  const assignment = await createAssignment(c.env, user, payload);
-  return c.json(assignment, 201);
-});
-
-app.get('/assignments', async (c) => {
+app.get('/assignments', optionalAuth, async (c) => {
   const assignments = await listAssignments(c.env);
   return c.json(assignments);
 });
 
-app.onError((error, c) => {
-  if (error instanceof UnauthorizedError) {
-    return c.json({ error: error.message }, 401);
+app.post('/assignments', requireAuth, async (c) => {
+  const user = c.get('user');
+  if (!user) {
+    throw new AuthenticationError();
+  }
+  if (user.role !== 'INSTRUCTOR') {
+    throw new AuthorizationError('Only instructors can create assignments');
   }
 
+  const payload = assignmentBodySchema.parse(await c.req.json());
+  const assignment = await createAssignment(c.env, user, payload);
+  logInfo('assignment.created', { assignmentId: assignment.id, userId: user.id });
+  return c.json(assignment, 201);
+});
+
+app.notFound((c) => c.json({ error: 'Not Found' }, 404));
+
+app.onError((error, c) => {
   if (error instanceof z.ZodError) {
     return c.json({ error: error.flatten() }, 400);
   }
+  if (error instanceof AuthenticationError || (typeof error === 'object' && error !== null && 'statusCode' in error)) {
+    const status = (error as { statusCode?: number }).statusCode ?? 500;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    if (status >= 500) {
+      logError('request.error', { message, status });
+    }
+    return c.json({ error: message }, status);
+  }
 
-  console.error('Unhandled Worker error', error);
+  const message = error instanceof Error ? error.message : 'Internal Server Error';
+  logError('request.unhandled_error', { message });
   return c.json({ error: 'Internal Server Error' }, 500);
 });
 
