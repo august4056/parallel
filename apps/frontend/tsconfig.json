@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "baseUrl": "./src",
+    "noEmit": true,
     "paths": {
       "@launchpad/shared": ["../../packages/shared/src"],
       "@launchpad/shared/*": ["../../packages/shared/src/*"]

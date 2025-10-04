@@ -31,3 +31,5 @@ apps/grader/target
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+# Build info files created by TypeScript project references
+*.tsbuildinfo
