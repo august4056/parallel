@@ -33,3 +33,7 @@ apps/grader/target
 /config/master.key
 # Build info files created by TypeScript project references
 *.tsbuildinfo
+# Ignore local environment files
+.env
+apps/*/.env
+packages/*/.env
