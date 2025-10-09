@@ -1,23 +1,26 @@
 {
-  "name": "@launchpad/worker",
+  "name": "@parallel/worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --local",
-    "build": "tsc -b",
+    "build": "node ./esbuild.config.mjs",
+    "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "test": "vitest",
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@launchpad/shared": "file:../../packages/shared",
-    "hono": "^4.0.5",
+    "hono": "^4.3.7",
     "jose": "^5.2.3",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240222.0",
-    "typescript": "^5.4.2",
-    "wrangler": "^3.28.2"
+    "@cloudflare/workers-types": "^4.20240514.0",
+    "@types/node": "^20.12.7",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.5.1",
+    "wrangler": "^3.36.0"
   }
 }

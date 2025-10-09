@@ -1,0 +1,10 @@
+name = "parallel-worker"
+main = "dist/worker.js"
+compatibility_date = "2024-05-15"
+
+[build]
+command = "npm run build"
+
+[vars]
+SUPABASE_URL = ""
+SUPABASE_SERVICE_ROLE_KEY = ""
