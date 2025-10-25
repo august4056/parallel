@@ -1,0 +1,15 @@
+baseUrl: "http://localhost:8080"
+tests:
+  - name: "Health check"
+    method: GET
+    path: "/health"
+    expectStatus: 200
+    points: 10
+  - name: "Create item"
+    method: POST
+    path: "/items"
+    headers:
+      Content-Type: application/json
+    body: '{"name":"sample"}'
+    expectStatus: 201
+    points: 15
