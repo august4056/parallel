@@ -1,0 +1,80 @@
+name: Deploy (main)
+
+on:
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: deploy-main-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  worker:
+    name: Deploy Cloudflare Worker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install deps (workspaces)
+        run: npm ci
+      - name: Build worker
+        run: npm run -w @parallel/worker build
+      - name: Publish via wrangler
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler publish -c infra/wrangler.toml --account-id $CLOUDFLARE_ACCOUNT_ID
+
+  frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install deps (workspaces)
+        run: npm ci
+      - name: Vercel deploy (production)
+        working-directory: apps/frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+          vercel build --prod --token "$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID"
+
+  grader:
+    name: Build & Update Cloud Run Job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Configure Docker auth for Artifact Registry
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+      - name: Build & Push image (Cloud Build)
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          REGION: ${{ secrets.GCP_REGION }}
+          REPO: ${{ secrets.GAR_REPOSITORY }}
+        run: |
+          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/grader:${{ github.sha }}"
+          gcloud builds submit --tag "$IMAGE" apps/grader
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+      - name: Update Cloud Run Job
+        env:
+          REGION: ${{ secrets.GCP_REGION }}
+          JOB: ${{ secrets.CLOUD_RUN_JOB_NAME }}
+        run: gcloud run jobs update "$JOB" --image "$IMAGE" --region "$REGION"
