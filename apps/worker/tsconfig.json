@@ -7,8 +7,14 @@
     "moduleResolution": "Bundler",
     "types": ["@cloudflare/workers-types", "vitest/globals"],
     "allowJs": false,
-    "composite": true
+    "composite": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@launchpad/shared": ["../../packages/shared/src"],
+      "@launchpad/shared/*": ["../../packages/shared/src/*"]
+    }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["dist"]
+  "exclude": ["dist"],
+  "references": [{ "path": "../../packages/shared" }]
 }
