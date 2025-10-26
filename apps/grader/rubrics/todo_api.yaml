@@ -1,0 +1,62 @@
+baseUrl: "http://localhost:8080"
+# Todo API rubric (MVP)
+# 配点内訳: 正常系30 / バリデ20 / スキーマ20(暫定:200応答) / 404・空10 / 性能10(暫定:200応答)
+# 現在の実装はHTTPステータスで評価（MVP）
+# 受講者は以下エンドポイントを実装:
+#  - POST /todos {title} -> 201, Location
+#  - GET /todos -> 200 JSON配列
+#  - GET /todos/{id} -> 200 or 404
+#  - title: 1〜100文字
+
+tests:
+  # 正常系: 一覧
+  - name: "List todos"
+    method: GET
+    path: "/todos"
+    expectStatus: 200
+    points: 10
+  # 正常系: 作成
+  - name: "Create todo"
+    method: POST
+    path: "/todos"
+    headers:
+      Content-Type: application/json
+    body: '{"title":"buy milk"}'
+    expectStatus: 201
+    points: 20
+  # スキーマ(暫定): 一覧200
+  - name: "Schema check (basic)"
+    method: GET
+    path: "/todos"
+    expectStatus: 200
+    points: 20
+  # 404: 不存在ID
+  - name: "Get not found"
+    method: GET
+    path: "/todos/00000000-0000-0000-0000-000000000000"
+    expectStatus: 404
+    points: 10
+  # バリデーション: タイトル不正（空）
+  - name: "Validate empty title"
+    method: POST
+    path: "/todos"
+    headers:
+      Content-Type: application/json
+    body: '{"title":""}'
+    expectStatus: 400
+    points: 10
+  # バリデーション: タイトル不正（長すぎ）
+  - name: "Validate too long title"
+    method: POST
+    path: "/todos"
+    headers:
+      Content-Type: application/json
+    body: '{"title":"#####################################################################################################"}'
+    expectStatus: 400
+    points: 10
+  # 性能(暫定): 一覧200
+  - name: "Performance basic"
+    method: GET
+    path: "/todos"
+    expectStatus: 200
+    points: 10
