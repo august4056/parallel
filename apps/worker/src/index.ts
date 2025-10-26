@@ -18,14 +18,18 @@ import {
   submissionBodySchema
 } from './schema';
 import type { ContextVariables, WorkerBindings } from './types';
+import { emitLearning, emitAudit, getClientIp } from './telemetry';
 
 const app = new Hono<{ Bindings: WorkerBindings; Variables: ContextVariables }>();
 
-app.use('*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  '*',
+  cors({
+    origin: '*',
+    allowMethods: ['GET', 'POST', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization']
+  })
+);
 
 app.use('*', async (c, next) => {
   const start = Date.now();
@@ -76,6 +80,19 @@ const optionalAuth: Parameters<typeof app.use>[1] = async (c, next) => {
 
 app.get('/health', (c) => c.json({ status: 'ok' }));
 
+// --- Todo API Example Spec ---
+app.get('/examples/todo/spec', (c) =>
+  c.json({
+    name: 'Todo API (MVP)',
+    endpoints: [
+      { method: 'POST', path: '/todos', body: '{"title": "string(1..100)"}', expect: 201 },
+      { method: 'GET', path: '/todos', expect: 200 },
+      { method: 'GET', path: '/todos/{id}', expect: '200 or 404' }
+    ],
+    rubric: 'apps/grader/rubrics/todo_api.yaml'
+  })
+);
+
 app.post('/submissions', requireAuth, async (c) => {
   const user = c.get('user');
   if (!user) {
@@ -88,6 +105,23 @@ app.post('/submissions', requireAuth, async (c) => {
   const payload = submissionBodySchema.parse(await c.req.json());
   const submission = await createSubmission(c.env, user, payload);
   logInfo('submission.created', { submissionId: submission.id, userId: user.id });
+  // learning + audit
+  emitLearning({
+    type: 'learning',
+    timestamp: new Date().toISOString(),
+    actor: { id: user.id },
+    verb: 'created',
+    object: { id: submission.id, objectType: 'Submission' },
+    context: { ip: getClientIp(c), route: c.req.path }
+  });
+  emitAudit({
+    type: 'audit',
+    timestamp: new Date().toISOString(),
+    actor: { id: user.id },
+    action: 'submission.created',
+    resourceId: submission.id,
+    ip: getClientIp(c)
+  });
   return c.json(submission, 201);
 });
 
@@ -115,11 +149,38 @@ app.get('/grades/:submissionId', requireAuth, async (c) => {
   if (!grade) {
     return c.json({ error: 'Grade not found' }, 404);
   }
+  emitLearning({
+    type: 'learning',
+    timestamp: new Date().toISOString(),
+    actor: { id: user.id },
+    verb: 'released',
+    object: { id: grade.id, objectType: 'Grade' },
+    context: { ip: getClientIp(c), route: c.req.path }
+  });
+  emitAudit({
+    type: 'audit',
+    timestamp: new Date().toISOString(),
+    actor: { id: user.id },
+    action: 'grade.released',
+    resourceId: grade.id,
+    ip: getClientIp(c)
+  });
   return c.json(grade);
 });
 
 app.get('/assignments', optionalAuth, async (c) => {
   const assignments = await listAssignments(c.env);
+  const user = c.get('user');
+  if (user) {
+    emitLearning({
+      type: 'learning',
+      timestamp: new Date().toISOString(),
+      actor: { id: user.id },
+      verb: 'viewed',
+      object: { id: 'list', objectType: 'AssignmentList' },
+      context: { ip: getClientIp(c), route: c.req.path }
+    });
+  }
   return c.json(assignments);
 });
 

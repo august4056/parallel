@@ -6,7 +6,10 @@ export {
   submissionSchema,
   submissionStatusEnum,
   userRoleEnum,
-  userSchema
+  userSchema,
+  // additional exports
+  submissionCreateInputSchema,
+  gradeResponseSchema
 } from './schemas';
 
 export type {
@@ -17,5 +20,8 @@ export type {
   Submission,
   SubmissionStatus,
   User,
-  UserRole
+  UserRole,
+  // additional exports
+  SubmissionCreateInput,
+  GradeResponse
 } from './schemas';

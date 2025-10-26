@@ -62,6 +62,10 @@ export const createSubmissionInputSchema = z
   .strict();
 export type CreateSubmissionInput = z.infer<typeof createSubmissionInputSchema>;
 
+// Alias with alternative naming convention
+export const submissionCreateInputSchema = createSubmissionInputSchema;
+export type SubmissionCreateInput = CreateSubmissionInput;
+
 export const createAssignmentInputSchema = z
   .object({
     title: z.string().min(1),
@@ -70,3 +74,7 @@ export const createAssignmentInputSchema = z
   })
   .strict();
 export type CreateAssignmentInput = z.infer<typeof createAssignmentInputSchema>;
+
+// A generic grade response for API payloads (same shape as Grade)
+export const gradeResponseSchema = gradeSchema;
+export type GradeResponse = z.infer<typeof gradeResponseSchema>;
