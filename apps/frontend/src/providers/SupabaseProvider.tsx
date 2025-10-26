@@ -7,7 +7,8 @@ import {
   useState
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import type { UserRole } from '@launchpad/shared';
+// Local alias to avoid external type dependency during Vercel build
+type UserRole = 'STUDENT' | 'INSTRUCTOR';
 import { supabaseClient } from '../lib/supabaseClient';
 
 type AuthContextValue = {
