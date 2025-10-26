@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx",
+    "prebuild": "npm run -w @launchpad/shared build"
   },
   "dependencies": {
     "@launchpad/shared": "file:../../packages/shared",
