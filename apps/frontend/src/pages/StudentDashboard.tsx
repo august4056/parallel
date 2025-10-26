@@ -1,11 +1,25 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Assignment, Submission } from '@launchpad/shared';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
 
-const submissionStatusLabel: Record<Submission['status'], string> = {
+// Local minimal types to avoid cross-package type resolution during Vercel build
+type SubmissionLite = {
+  id: string;
+  assignmentId: string;
+  repoUrl: string;
+  status: 'QUEUED' | 'RUNNING' | 'PASSED' | 'FAILED';
+  createdAt: string;
+};
+type AssignmentLite = {
+  id: string;
+  title: string;
+  description: string;
+  dueAt: string;
+};
+
+const submissionStatusLabel: Record<SubmissionLite['status'], string> = {
   QUEUED: 'キュー待ち',
   RUNNING: '実行中',
   PASSED: '合格',
@@ -20,13 +34,13 @@ export const StudentDashboard = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const assignmentsQuery = useQuery<Assignment[]>({
+  const assignmentsQuery = useQuery<AssignmentLite[]>({
     queryKey: ['assignments'],
     queryFn: () => api!.listAssignments(),
     enabled: Boolean(api)
   });
 
-  const submissionsQuery = useQuery<Submission[]>({
+  const submissionsQuery = useQuery<SubmissionLite[]>({
     queryKey: ['student', 'submissions'],
     queryFn: () => api!.listStudentSubmissions(),
     enabled: Boolean(api)

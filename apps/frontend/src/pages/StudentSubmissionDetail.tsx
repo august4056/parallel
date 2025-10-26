@@ -33,7 +33,7 @@ export const StudentSubmissionDetail = () => {
       return <p className="text-sm text-slate-600">採点はまだ完了していません。後ほど再度ご確認ください。</p>;
     }
 
-    const { grade } = detailQuery.data;
+    const { grade } = detailQuery.data as SubmissionDetail;
 
     return (
       <div className="space-y-4">
