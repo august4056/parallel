@@ -2,12 +2,13 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../hooks/useApi';
+import type { SubmissionDetail } from '../lib/api';
 
 export const StudentSubmissionDetail = () => {
   const { submissionId } = useParams();
   const api = useApi();
 
-  const detailQuery = useQuery({
+  const detailQuery = useQuery<SubmissionDetail>({
     queryKey: ['submission-detail', submissionId],
     queryFn: () => api!.getSubmissionDetail(submissionId as string),
     enabled: Boolean(api && submissionId)
