@@ -82,9 +82,9 @@ export const StudentDashboard = () => {
         <h2 className="text-lg font-semibold text-slate-900">Todo API 課題 (MVP)</h2>
         <p className="text-sm text-slate-600">以下のエンドポイントを実装して提出してください。採点はHTTPステータス中心で行います。</p>
         <ul className="list-disc pl-6 text-sm text-slate-700">
-          <li>POST /todos {'{'} title {'}'} -> 201, Location</li>
-          <li>GET /todos -> 200 JSON配列</li>
-          <li>GET /todos/{'{'}id{'}'} -> 200 or 404</li>
+          <li>POST /todos {'{'} title {'}'} -{'>'} 201, Location</li>
+          <li>GET /todos -{'>'} 200 JSON配列</li>
+          <li>GET /todos/{'{'}id{'}'} -{'>'} 200 or 404</li>
           <li>title: 1〜100文字</li>
         </ul>
         <p className="text-xs text-slate-500">rubrics/todo_api.yaml を利用して採点します（MVP）。</p>
@@ -265,4 +265,5 @@ export const StudentDashboard = () => {
     </div>
   );
 };
+
 
