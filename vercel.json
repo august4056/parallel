@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run -w @launchpad/frontend build",
+  "outputDirectory": "apps/frontend/dist"
+}
+
