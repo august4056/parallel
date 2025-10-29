@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Assignment } from '@launchpad/shared';
+type AssignmentLite = { id: string; title: string; description: string; dueAt: string };
 import type { InstructorSubmission } from '../lib/api';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
@@ -19,7 +19,7 @@ export const InstructorDashboard = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [regradeMessage, setRegradeMessage] = useState<string | null>(null);
 
-  const assignmentsQuery = useQuery<Assignment[]>({
+  const assignmentsQuery = useQuery<AssignmentLite[]>({
     queryKey: ['assignments'],
     queryFn: () => api!.listAssignments(),
     enabled: Boolean(api)

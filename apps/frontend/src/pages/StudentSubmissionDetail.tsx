@@ -75,22 +75,22 @@ export const StudentSubmissionDetail = () => {
                 <dt className="font-medium text-slate-500">リポジトリ</dt>
                 <dd>
                   <a
-                    href={detailQuery.data.submission.repoUrl}
+                    href={(detailQuery.data as SubmissionDetail).submission.repoUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="break-all"
                   >
-                    {detailQuery.data.submission.repoUrl}
+                    {(detailQuery.data as SubmissionDetail).submission.repoUrl}
                   </a>
                 </dd>
               </div>
               <div>
                 <dt className="font-medium text-slate-500">提出日時</dt>
-                <dd>{new Date(detailQuery.data.submission.createdAt).toLocaleString('ja-JP')}</dd>
+                <dd>{new Date((detailQuery.data as SubmissionDetail).submission.createdAt).toLocaleString('ja-JP')}</dd>
               </div>
               <div>
                 <dt className="font-medium text-slate-500">ステータス</dt>
-                <dd className="font-semibold text-slate-900">{detailQuery.data.submission.status}</dd>
+                <dd className="font-semibold text-slate-900">{(detailQuery.data as SubmissionDetail).submission.status}</dd>
               </div>
             </dl>
           </section>

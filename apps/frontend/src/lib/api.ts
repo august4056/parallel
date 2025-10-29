@@ -1,20 +1,59 @@
-import {
-  assignmentSchema,
-  createAssignmentInputSchema,
-  createSubmissionInputSchema,
-  gradeSchema,
-  submissionSchema,
-  userSchema
-} from '@launchpad/shared';
-import type {
-  Assignment,
-  CreateAssignmentInput,
-  CreateSubmissionInput,
-  Grade,
-  Submission,
-  User
-} from '@launchpad/shared';
 import { z } from 'zod';
+
+// Local Zod schemas and types to avoid cross-package coupling during Vercel build
+const userSchema = z
+  .object({ id: z.string(), email: z.string().email() })
+  .strict();
+export type User = z.infer<typeof userSchema>;
+
+const assignmentSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string().default(''),
+    dueAt: z.string(),
+    createdBy: z.string().optional(),
+    createdAt: z.string().optional()
+  })
+  .strict();
+export type Assignment = z.infer<typeof assignmentSchema>;
+
+const submissionSchema = z
+  .object({
+    id: z.string(),
+    userId: z.string().optional(),
+    assignmentId: z.string(),
+    repoUrl: z.string().url(),
+    status: z.enum(['QUEUED', 'RUNNING', 'PASSED', 'FAILED']),
+    score: z.number().nullable().optional(),
+    feedback: z.string().nullable().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string().optional(),
+    student: userSchema.optional()
+  })
+  .strict();
+export type Submission = z.infer<typeof submissionSchema>;
+
+const gradeSchema = z
+  .object({
+    id: z.string(),
+    submissionId: z.string(),
+    rubric: z.unknown(),
+    totalScore: z.number(),
+    gradedAt: z.string()
+  })
+  .strict();
+export type Grade = z.infer<typeof gradeSchema>;
+
+export const createSubmissionInputSchema = z
+  .object({ assignmentId: z.string(), repoUrl: z.string().url() })
+  .strict();
+export type CreateSubmissionInput = z.infer<typeof createSubmissionInputSchema>;
+
+export const createAssignmentInputSchema = z
+  .object({ title: z.string().min(1), description: z.string().optional(), dueAt: z.string() })
+  .strict();
+export type CreateAssignmentInput = z.infer<typeof createAssignmentInputSchema>;
 
 const baseUrl = import.meta.env.VITE_API_BASE ?? 'http://localhost:8787';
 
