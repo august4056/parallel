@@ -29,11 +29,12 @@ export const StudentSubmissionDetail = () => {
       return <p className="text-sm text-slate-600">データが見つかりませんでした。</p>;
     }
 
-    if (!detailQuery.data.grade) {
+    const detail = detailQuery.data as SubmissionDetail;
+    if (!detail.grade) {
       return <p className="text-sm text-slate-600">採点はまだ完了していません。後ほど再度ご確認ください。</p>;
     }
 
-    const { grade } = detailQuery.data as SubmissionDetail;
+    const grade = detail.grade;
 
     return (
       <div className="space-y-4">
