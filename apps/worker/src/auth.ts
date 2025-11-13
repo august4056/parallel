@@ -35,7 +35,7 @@ export class AuthenticationError extends Error {
   }
 }
 
-const getRemoteJwks = (supabaseUrl: string) => {
+const getRemoteJwks = (supabaseUrl: string, serviceRoleKey: string) => {
   const normalized = supabaseUrl.replace(/\/$/, '');
   const cacheKey = normalized;
   const cached = jwksCache.get(cacheKey);
@@ -44,8 +44,14 @@ const getRemoteJwks = (supabaseUrl: string) => {
     return cached.loader;
   }
 
-  const jwksUrl = new URL('/auth/v1/keys', normalized).toString();
-  const loader = createRemoteJWKSet(new URL(jwksUrl));
+  const jwksUrl = new URL('/auth/v1/keys', normalized);
+  const loader = createRemoteJWKSet(jwksUrl, {
+    fetcher: async (url, init) => {
+      const headers = new Headers(init?.headers);
+      headers.set('apikey', serviceRoleKey);
+      return fetch(url, { ...init, headers });
+    }
+  });
   jwksCache.set(cacheKey, { loader, expiresAt: now + JWKS_CACHE_TTL_MS });
   return loader;
 };
@@ -73,8 +79,11 @@ export const verifySupabaseJwt = async (
   if (!env.SUPABASE_URL) {
     throw new AuthenticationError('Missing Supabase URL');
   }
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new AuthenticationError('Missing Supabase service key');
+  }
 
-  const jwks = getRemoteJwks(env.SUPABASE_URL);
+  const jwks = getRemoteJwks(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
   const { payload } = await jwtVerify(token, jwks, {
     algorithms: ['RS256'],
