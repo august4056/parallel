@@ -1,0 +1,9 @@
+name = "parallel-worker"
+main = "apps/worker/dist/worker.js"
+compatibility_date = "2024-05-15"
+
+[build]
+command = "npm run -w @launchpad/worker build"
+
+[vars]
+SUPABASE_URL = "https://geboejvseiolwisgxetu.supabase.co"
