@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/lib/apiClient.ts"],"version":"5.9.2"}
+{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/AppLayout.tsx","./src/hooks/useApi.ts","./src/hooks/useAuth.ts","./src/lib/api.ts","./src/lib/supabaseClient.ts","./src/pages/InstructorDashboard.tsx","./src/pages/Landing.tsx","./src/pages/StudentDashboard.tsx","./src/pages/StudentSubmissionDetail.tsx","./src/providers/SupabaseProvider.tsx","./src/types/shared.d.ts"],"version":"5.9.3"}

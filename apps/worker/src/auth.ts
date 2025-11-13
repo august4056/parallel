@@ -46,10 +46,9 @@ const getRemoteJwks = (supabaseUrl: string, serviceRoleKey: string) => {
 
   const jwksUrl = new URL('/auth/v1/keys', normalized);
   const loader = createRemoteJWKSet(jwksUrl, {
-    fetcher: async (url, init) => {
-      const headers = new Headers(init?.headers);
-      headers.set('apikey', serviceRoleKey);
-      return fetch(url, { ...init, headers });
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`
     }
   });
   jwksCache.set(cacheKey, { loader, expiresAt: now + JWKS_CACHE_TTL_MS });
