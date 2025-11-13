@@ -1,36 +1,33 @@
-# LaunchPad Lab Monorepo
+# Parallel
 
-This repository contains the minimum viable product scaffold for **LaunchPad Lab**, a
-learning platform that combines Supabase, Cloudflare Workers, Vite + React, and a
-Cloud Run based autograder.
+ParallelはSupabase、Cloudflare Workers、Vite + React、Cloud Runベースのオートグレーダを組み合わせた学習プラットフォーム向けMVPのモノレポです。講師と受講者が同じ基盤でダッシュボード、API、採点基盤、インフラ管理を扱えるよう最小限の構成をまとめています。
 
-## Directory structure
+## ディレクトリ構成
 
-- `apps/frontend` – React + Vite dashboard for instructors and students.
-- `apps/worker` – Cloudflare Worker REST API that fronts Supabase.
-- `apps/grader` – Java 17 Maven project packaged for Cloud Run Jobs.
-- `packages/shared` – Shared TypeScript types and Zod schemas.
-- `infra` – Deployment descriptors (Wrangler, Cloud Run Job, CI workflow).
-- `supabase` – SQL schema, RLS policies, and seed data for Supabase.
+- `apps/frontend` – 講師・受講者向けのReact + Viteダッシュボード。
+- `apps/worker` – SupabaseをフロントするCloudflare Worker製REST API。
+- `apps/grader` – Cloud Run JobsへデプロイするJava 17 / Maven製オートグレーダ。
+- `packages/shared` – 共有TypeScript型とZodスキーマ。
+- `infra` – Wrangler、Cloud Run Job、CIワークフローなどのデプロイ記述子。
+- `supabase` – Supabase用のSQLスキーマ、RLSポリシー、シードデータ。
 
-## Getting started
+## セットアップ
 
-Install dependencies with npm workspaces:
+npmワークスペースを使って依存関係をインストールします。
 
 ```bash
 npm install
 ```
 
-### Frontend (Vite)
+### フロントエンド (Vite)
 
 ```bash
 npm run -w @launchpad/frontend dev
 ```
 
-Environment variables:
+主な環境変数:
 
-- `VITE_API_BASE_URL` – URL of the Cloudflare Worker API (defaults to
-  `http://localhost:8787`).
+- `VITE_API_BASE_URL` – Cloudflare Worker APIのURL (既定値: `http://localhost:8787`)。
 
 ### Cloudflare Worker API
 
@@ -40,22 +37,20 @@ npm install
 npm run dev
 ```
 
-Configure secrets in `infra/wrangler.toml` before deploying.
+本番デプロイ前に`infra/wrangler.toml`へ必要なシークレットを設定してください。
 
-### Autograder
+### オートグレーダ
 
 ```bash
 cd apps/grader
 mvn clean package
 ```
 
-The resulting shaded JAR is published at
-`apps/grader/target/grader-0.1.0-SNAPSHOT-shaded.jar`. Use the provided Dockerfile to
-build an image for Cloud Run Jobs.
+ビルド後のシェーディング済みJARは`apps/grader/target/grader-0.1.0-SNAPSHOT-shaded.jar`に生成されます。付属のDockerfileを使ってCloud Run Jobs向けイメージをビルドしてください。
 
 ## Supabase
 
-Apply schema, policies, and seed data:
+スキーマ、ポリシー、シードデータを適用します。
 
 ```bash
 supabase db push supabase/schema.sql
@@ -63,11 +58,8 @@ supabase db push supabase/policies.sql
 psql $SUPABASE_DB_URL -f supabase/seed.sql
 ```
 
-Ensure Supabase Auth tokens include an `app_metadata.role` claim matching `STUDENT` or
-`INSTRUCTOR` for Worker-side authorization.
+Supabase Authのトークンには`app_metadata.role`クレームとして`STUDENT`または`INSTRUCTOR`を設定し、Worker側の認可判定に合わせてください。
 
-## Continuous Integration
+## 継続的インテグレーション
 
-The GitHub Actions workflow (`infra/github/workflows/ci.yml`) installs npm
-dependencies, builds the frontend, type-checks the Worker and shared package, and runs
-Maven tests for the grader.
+GitHub Actionsワークフロー (`infra/github/workflows/ci.yml`) はnpm依存関係のインストール、フロントエンドのビルド、Workerと共有パッケージの型チェック、そしてオートグレーダのMavenテスト実行を行います。
